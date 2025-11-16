@@ -1,0 +1,84 @@
+---
+title: "HUM.A.N OPS – Relatório de Bem-Estar, Inclusão e Sustentabilidade"
+author: "Seu Grupo"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(DBI)
+library(RSQLite)
+library(dplyr)
+library(ggplot2)
+db_path <- "../db/human_ops.db"
+con <- dbConnect(RSQLite::SQLite(), db_path)
+```
+
+## 1. Introdução
+
+Este relatório apresenta uma análise de bem-estar, inclusão e sustentabilidade\
+do sistema HUM.A.N OPS, utilizando dados coletados pela POC.
+
+## 2. Bem-Estar
+
+```{r}
+
+checkin <- dbReadTable(con, "checkin")
+colaboradores <- dbReadTable(con, "colaborador")
+
+df <- checkin |>
+inner_join(colaboradores, by = c("id_colab" = "id_colab"))
+
+df$dt <- as.POSIXct(df$dt)
+
+ggplot(df, aes(x = dt, y = q3, color = nm_colaborador)) +
+geom_line() +
+labs(
+title = "Evolução do nível de stress (q3)",
+x = "Data",
+y = "Stress (1-5)"
+)
+
+
+```
+
+## 3. Inclusão (Fairness)
+
+```{r}
+inclusao <- dbReadTable(con, "inclusao_recrut")
+inclusao$aprovado <- as.factor(inclusao$aprovado)
+
+inclusao |>
+group_by(grupo_ref) |>
+summarise(taxa_aprovacao = mean(as.numeric(as.character(aprovado)))) |>
+knitr::kable()
+
+```
+
+## 4. Sustentabilidade (Energia)
+
+```{r}
+
+energia <- dbReadTable(con, "energia")
+energia$dt <- as.POSIXct(energia$dt)
+
+ggplot(energia, aes(x = dt, y = kwh)) +
+geom_line() +
+labs(
+title = "Consumo de energia ao longo do tempo",
+x = "Data",
+y = "kWh"
+)
+
+```
+
+## 5. Conclusões
+
+```{r}
+dbDisconnect(con)
+
+```
