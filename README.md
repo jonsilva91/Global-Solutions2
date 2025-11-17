@@ -52,7 +52,7 @@ Caso possua pouco tempo, avalie nesta ordem:
 4. **📁 Código Principal**
 
    - `src/api/main.py` – API FastAPI
-   - `src/dashboard/app.py` – Dashboard Streamlit
+   - `src/dashboard/app_dash.py` – Dashboard Plotly
    - `src/ml/*.py` – Modelos de Machine Learning
    - `scripts/init_db.py` – Inicialização do projeto
 
@@ -160,7 +160,7 @@ http://127.0.0.1:8000/health
 ### 5. Rodar Dashboard
 
 ```bash
-streamlit run src/dashboard/app.py
+python src/dashboard/app_dash.py
 
 
 ```

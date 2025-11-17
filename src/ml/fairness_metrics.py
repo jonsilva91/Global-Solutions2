@@ -17,3 +17,6 @@ def disparate_impact(df: pd.DataFrame, group_col: str, outcome_col: str):
     if max_rate == 0:
         return None
     return float(min_rate / max_rate)
+
+if __name__ == "__main__":
+    disparate_impact()

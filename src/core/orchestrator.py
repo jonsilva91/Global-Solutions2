@@ -3,7 +3,7 @@ Orquestrador que decide qual agente responde: Atena, Hygeia, Gaia, Sophia.
 """
 
 from typing import Literal
-from src.bot import atenabot, hygeiacheckin
+from src.bot import atenabot, hygeiacheckin, pandora
 from src.bot.intents_classifier import classify_intent
 USER_CONTEXT = {}
 
@@ -22,7 +22,9 @@ HELP_TEXT = (
 
 def route_message(user_id: str, text: str) -> str:
     text = text.lower().strip()
-
+    if text.lower().startswith("mental") or text.lower().startswith("terapia"):
+        return pandora.handle_pandora_message(user_id, text)
+    
     # comandos globais
     if text in ["ajuda", "help"]:
         return HELP_TEXT
@@ -45,10 +47,11 @@ def route_message(user_id: str, text: str) -> str:
         USER_CONTEXT[user_id] = "checkin"
         return hygeiacheckin.handle_message(user_id, text)
     
-    
+
     if intent in ("tarefas", "relatorio"):
         return atenabot.handle_message(user_id, text)
-
+    elif intent == "pandora":
+        return pandora.handle_message(user_id, text)
     # futuros:
     if intent == "energia":
         return "🌍 Gaia aqui! Em breve mostrarei insights de energia pelo bot — use o dashboard enquanto isso."
