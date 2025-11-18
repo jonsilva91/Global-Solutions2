@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS checkin (
     q1              INTEGER NOT NULL,
     q2              INTEGER NOT NULL,
     q3              INTEGER NOT NULL,
+    q4              INTEGER NOT NULL,
+    q5              INTEGER NOT NULL,
     texto_opcional  TEXT,
     FOREIGN KEY (id_colab) REFERENCES colaborador(id_colab)
 );

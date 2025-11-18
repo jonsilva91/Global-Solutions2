@@ -22,6 +22,11 @@ def get_connection():
     return sqlite3.connect(DB_PATH)
 
 
+# ================== MENSAGEM INICIAL DO BOT ==================
+# Puxa automaticamente o HELP_TEXT do orchestrator
+INITIAL_BOT_MSG = route_message("dashboard_user", "ajuda")
+
+
 # ================== APP DASH ==================
 app = Dash(__name__, suppress_callback_exceptions=True)
 server = app.server
@@ -36,18 +41,7 @@ app.layout = html.Div(
             data=[
                 {
                     "role": "assistant",
-                    "message": (
-                        "👋 Olá! Eu sou o copiloto HUM.A.N OPS.\n\n"
-                        "Posso te ajudar com:\n"
-                        "- `checkin` – bem-estar e motivação (Hygeia)\n"
-                        "- `tarefas` – carga de trabalho e automações (Atena)\n"
-                        "- `relatorio` – resumo automático (Atena)\n"
-                        "- `energia` – consumo e sustentabilidade (Gaia)\n"
-                        "- `inclusao` – métricas de fairness (Sophia)\n"
-                        "- `ajuda` – mostrar esta lista\n"
-                        "- `sair` – encerrar bate-papo\n\n"
-                        "Sobre o que você quer falar agora?"
-                    ),
+                    "message": INITIAL_BOT_MSG,
                 }
             ],
         ),
@@ -90,10 +84,10 @@ app.layout = html.Div(
             },
         ),
 
-        # ====== Janela do chat (abre/fecha) ======
+        # ====== Janela do chat ======
         html.Div(
             id="chat-container",
-            style={"display": "none"},  # estilo real vem do callback
+            style={"display": "none"},
             children=[
                 html.Div(
                     style={
@@ -168,7 +162,7 @@ app.layout = html.Div(
                             ],
                         ),
                         html.Small(
-                            "Use o copiloto para tirar dúvidas rápidas: `ajuda`, `checkin`, `tarefas`...",
+                            "Dicas: `ajuda`, `checkin`, `tarefas`, `falar`...",
                             style={"marginTop": "4px", "color": "#555"},
                         ),
                     ],
@@ -204,7 +198,9 @@ def pessoas_layout():
                ch.dt,
                ch.q1 AS motivacao,
                ch.q2 AS cansaco,
-               ch.q3 AS stress
+               ch.q4 AS carga_trabalho,
+               ch.q5 AS stress,
+               ch.stress_score
         FROM checkin ch
         JOIN colaborador c ON c.id_colab = ch.id_colab
         ORDER BY ch.dt DESC
@@ -227,12 +223,15 @@ def pessoas_layout():
     fig = px.line(
         df_checkin_sorted,
         x="dt",
-        y=["motivacao", "cansaco", "stress"],
+        y=["stress", "stress_score"],
         markers=True,
-        labels={"value": "Pontuação", "dt": "Data", "variable": "Indicador"},
-        title="Evolução de motivação, cansaço e stress",
+        labels={
+            "value": "Valor",
+            "dt": "Data",
+            "variable": "Indicador",
+        },
+        title="Evolução do stress (autoavaliação x score do modelo)",
     )
-
     return html.Div(
         [
             html.H3("Pulso de Bem-Estar"),
@@ -350,13 +349,12 @@ def inclusao_layout():
     Output("chat-history", "data"),
     Output("chat-input", "value"),
     Input("send-button", "n_clicks"),
-    Input("chat-input", "n_submit"),  # ENTER no input
+    Input("chat-input", "n_submit"),
     State("chat-input", "value"),
     State("chat-history", "data"),
     prevent_initial_call=True,
 )
 def update_chat(n_clicks, n_submit, user_msg, history):
-    # Não tem texto? Não faz nada
     if not user_msg or not user_msg.strip():
         raise PreventUpdate
 
@@ -366,7 +364,7 @@ def update_chat(n_clicks, n_submit, user_msg, history):
     user_msg_clean = user_msg.strip()
     history.append({"role": "user", "message": user_msg_clean})
 
-    # Se usuário digitou "sair": só manda mensagem de saída
+    # Se usuário digitou "sair": só envia mensagem de saída
     if user_msg_clean.lower() == "sair":
         history.append(
             {
@@ -376,7 +374,7 @@ def update_chat(n_clicks, n_submit, user_msg, history):
         )
         return history, ""
 
-    # Envia mensagem ao bot normalmente
+    # Envia mensagem ao bot
     bot_reply = route_message("dashboard_user", user_msg_clean)
     history.append({"role": "assistant", "message": bot_reply})
 
@@ -418,7 +416,7 @@ def render_chat(history):
     )
 
 
-# ===== Toggle abre/fecha do chat =====
+# ================== ABRE/FECHA CHAT ==================
 @app.callback(
     Output("chat-open", "data"),
     Input("open-chat-btn", "n_clicks"),
@@ -433,12 +431,9 @@ def toggle_chat(n_clicks, history, is_open):
 
     trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
-    # Clique no botão flutuante -> alterna abrir/fechar
     if trigger_id == "open-chat-btn":
         return not bool(is_open)
 
-    # Mudança no histórico (mensagem nova):
-    # se última mensagem de usuário for "sair", fecha o chat
     if history:
         for msg in reversed(history):
             if msg.get("role") == "user":
