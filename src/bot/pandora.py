@@ -83,7 +83,7 @@ def handle_pandora_message(user_id: str, text: str) -> str:
     responses = find_responses(tag)
 
     # 3) Se o modelo estiver inseguro ou não tiver respostas, manda uma mensagem neutra em PT-BR
-    if prob < 0.4 or not responses:
+    if prob < 0.15 or not responses:
         return (
             "Entendo que você está passando por um momento difícil.\n\n"
             "Posso te ouvir e refletir com você sobre isso. "

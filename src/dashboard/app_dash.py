@@ -6,7 +6,7 @@ import pandas as pd
 from dash import Dash, html, dcc, dash_table, Input, Output, State
 from dash.exceptions import PreventUpdate
 import plotly.express as px
-import dash  # para usar dash.callback_context
+import dash  
 
 # ================== PATHS E IMPORTS ==================
 BASE_DIR = Path(__file__).resolve().parents[2]

@@ -8,22 +8,52 @@ format:
 ---
 
 ```{r}
-#| label: setup
 #| include: false
 library(DBI)
 library(RSQLite)
 library(dplyr)
 library(ggplot2)
-db_path <- "../db/human_ops.db"
+library(scales)
+library(zoo)
+library(kableExtra)
+
+# conexão
+db_path <- "../../config/db/human_ops.db"
 con <- dbConnect(RSQLite::SQLite(), db_path)
+
+# paleta HUM.A.N OPS
+cores <- c(
+  "stress" = "#d9534f",
+  "cansaco" = "#f0ad4e",
+  "motivacao" = "#5bc0de",
+  "energia" = "#5cb85c",
+  "inclusao" = "#428bca"
+)
 ```
 
 ## 1. Introdução
 
-Este relatório apresenta uma análise de bem-estar, inclusão e sustentabilidade\
-do sistema HUM.A.N OPS, utilizando dados coletados pela POC.
+Este relatório apresenta a análise integrada das três frentes do HUM.A.N OPS:
+
+-   **Bem-estar** (Hygeia)
+
+-   **Inclusão e Fairness** (Sophia)
+
+-    **Sustentabilidade e Energia** (Gaia)
+
+Ele incorpora:
+
+-    análises temporais
+
+-    gráficos avançados
+
+-    KPIs
+
+-    tabelas formatadas profissionalmente
 
 ## 2. Bem-Estar
+
+2.1. Base de dados
 
 ```{r}
 
@@ -31,52 +61,175 @@ checkin <- dbReadTable(con, "checkin")
 colaboradores <- dbReadTable(con, "colaborador")
 
 df <- checkin |>
-inner_join(colaboradores, by = c("id_colab" = "id_colab"))
+inner_join(colaboradores, by = c("id_colab" = "id_colab")) |>
+mutate(
+dt = as.POSIXct(dt),
+nome = nm_colaborador
+)
 
-df$dt <- as.POSIXct(df$dt)
 
-ggplot(df, aes(x = dt, y = q3, color = nm_colaborador)) +
-geom_line() +
+```
+
+2.2. Evolução dos indicadores
+
+```{r}
+df_long <- df |>
+select(dt, nome, q1, q2, q3) |>
+rename(
+motivacao = q1,
+cansaco = q2,
+stress = q3
+) |>
+tidyr::pivot_longer(
+cols = c(motivacao, cansaco, stress),
+names_to = "variavel",
+values_to = "valor"
+)
+
+ggplot(df_long, aes(x = dt, y = valor, color = variavel)) +
+geom_line(size = 1) +
+geom_smooth(se = FALSE, linewidth = 1.1) +
+scale_color_manual(values = cores) +
 labs(
-title = "Evolução do nível de stress (q3)",
+title = "Evolução dos Indicadores de Bem-Estar",
+x = "Data",
+y = "Intensidade (1–5)",
+color = "Variável"
+) +
+theme_minimal(base_size = 13)
+
+```
+
+2.3. Stress por colaborador (facet)
+
+```{r}
+ggplot(df, aes(x = dt, y = q3, color = nome)) +
+geom_line(size = 1) +
+facet_wrap(~nome, scales = "free_y") +
+labs(
+title = "Stress por Colaborador",
 x = "Data",
 y = "Stress (1-5)"
-)
+) +
+theme_minimal(base_size = 12)
+
+```
+
+2.4. KPI – Médias gerais
+
+```{r}
+kpis <- df_long %>%
+  group_by(variavel) %>%
+  summarise(media = round(mean(valor), 2))
+
+kpis %>%
+  kable() %>%
+  kableExtra::kable_styling(full_width = FALSE, bootstrap_options = "striped")
 
 
 ```
 
 ## 3. Inclusão (Fairness)
 
-```{r}
-inclusao <- dbReadTable(con, "inclusao_recrut")
-inclusao$aprovado <- as.factor(inclusao$aprovado)
+3.1. Base
 
-inclusao |>
+```{r}
+inclusao <- dbReadTable(con, "inclusao_recrut") |>
+mutate(
+aprovado = as.numeric(aprovado),
+grupo_ref = as.factor(grupo_ref)
+)
+
+
+```
+
+3.2 Taxa de aprovação por grupo
+
+```{r}
+tab <- inclusao |>
 group_by(grupo_ref) |>
-summarise(taxa_aprovacao = mean(as.numeric(as.character(aprovado)))) |>
-knitr::kable()
+summarise(
+taxa_aprovacao = mean(aprovado),
+candidatos = n()
+)
+
+tab |>
+kable(digits = 3) |>
+kable_styling(full_width = FALSE, bootstrap_options = "striped")
+
+```
+
+3.3. Gráfico – Fairness
+
+```{r}
+ggplot(tab, aes(x = grupo_ref, y = taxa_aprovacao, fill = grupo_ref)) +
+geom_col() +
+scale_fill_manual(values = cores["inclusao"]) +
+scale_y_continuous(labels = percent_format()) +
+labs(
+title = "Taxa de Aprovação por Grupo",
+x = "Grupo",
+y = "Aprovação (%)"
+) +
+theme_minimal(base_size = 13)
 
 ```
 
 ## 4. Sustentabilidade (Energia)
 
+4.1. Base
+
 ```{r}
 
-energia <- dbReadTable(con, "energia")
-energia$dt <- as.POSIXct(energia$dt)
+energia <- dbReadTable(con, "energia") |>
+mutate(dt = as.POSIXct(dt))
 
+
+```
+
+4.2. Gráfico temporal
+
+```{r}
 ggplot(energia, aes(x = dt, y = kwh)) +
-geom_line() +
+geom_line(color = cores["energia"], linewidth = 1) +
+geom_smooth(color = "black", linewidth = 1, se = FALSE) +
 labs(
-title = "Consumo de energia ao longo do tempo",
+title = "Consumo de Energia ao Longo do Tempo",
 x = "Data",
 y = "kWh"
-)
+) +
+theme_minimal(base_size = 13)
+
+```
+
+4.3. Heatmap horário (se houver granularidade)
+
+```{r}
+energia_hm <- energia |>
+mutate(
+dia = as.Date(dt),
+hora = format(dt, "%H")
+) |>
+group_by(dia, hora) |>
+summarise(kwh_medio = mean(kwh))
+
+ggplot(energia_hm, aes(x = hora, y = dia, fill = kwh_medio)) +
+geom_tile() +
+scale_fill_gradient(low = "white", high = cores["energia"]) +
+labs(title = "Heatmap de Consumo de Energia", x = "Hora", y = "Dia") +
+theme_minimal(base_size = 12)
 
 ```
 
 ## 5. Conclusões
+
+-   **Bem-estar:** tendências visuais ajudam a identificar riscos de burnout.
+
+-    **Inclusão:** fairness pode ser monitorado ao longo do processo de recrutamento.
+
+<!-- -->
+
+-    **Energia:** padrões e anomalias podem ser vistos claramente nos gráficos
 
 ```{r}
 dbDisconnect(con)
