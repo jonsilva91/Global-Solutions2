@@ -1,8 +1,9 @@
 ---
-title: "HUM.A.N OPS – Relatório de Bem-Estar, Inclusão e Sustentabilidade"
+title: "HUM.A.N OPS – Relatório"
 author: "Seu Grupo"
 format:
   pdf:
+    
     toc: true
     number-sections: true
 ---
@@ -72,46 +73,45 @@ nome = nm_colaborador
 
 2.2. Evolução dos indicadores
 
-```{r}
+```{r,echo=FALSE,warning=FALSE, message=FALSE}
 df_long <- df |>
-select(dt, nome, q1, q2, q3) |>
-rename(
-motivacao = q1,
-cansaco = q2,
-stress = q3
-) |>
-tidyr::pivot_longer(
-cols = c(motivacao, cansaco, stress),
-names_to = "variavel",
-values_to = "valor"
-)
+  select(dt, nome, q1, q2, q3, q4, q5) |>
+  rename(
+    motivacao      = q1,
+    cansaco        = q2,
+    stress         = q3,
+    carga_trabalho = q4,
+    stress_score   = q5
+  ) |>
+  tidyr::pivot_longer(
+    cols = c(motivacao, cansaco, stress, carga_trabalho, stress_score),
+    names_to = "variavel",
+    values_to = "valor"
+  )
 
-ggplot(df_long, aes(x = dt, y = valor, color = variavel)) +
-geom_line(size = 1) +
-geom_smooth(se = FALSE, linewidth = 1.1) +
-scale_color_manual(values = cores) +
-labs(
-title = "Evolução dos Indicadores de Bem-Estar",
-x = "Data",
-y = "Intensidade (1–5)",
-color = "Variável"
-) +
-theme_minimal(base_size = 13)
+suppressWarnings({
+  ggplot(df_long, aes(x = dt, y = valor, color = variavel, group = variavel)) +
+    geom_line(size = 1) +
+    geom_point(size = 2) +
+    facet_wrap(~nome, scales = "free_y") +
+    scale_x_datetime(date_labels = "%d/%m", date_breaks = "1 day") +
+    scale_color_manual(values = c(
+      motivacao = "#5bc0de",
+      cansaco = "#f0ad4e",
+      stress = "#d9534f",
+      carga_trabalho = "#428bca",
+      stress_score = "#5cb85c"
+    )) +
+    labs(
+      title = "Indicadores de Bem-Estar por Colaborador",
+      x = "Data",
+      y = "Valor",
+      color = "Indicador"
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+})
 
-```
-
-2.3. Stress por colaborador (facet)
-
-```{r}
-ggplot(df, aes(x = dt, y = q3, color = nome)) +
-geom_line(size = 1) +
-facet_wrap(~nome, scales = "free_y") +
-labs(
-title = "Stress por Colaborador",
-x = "Data",
-y = "Stress (1-5)"
-) +
-theme_minimal(base_size = 12)
 
 ```
 
@@ -161,8 +161,8 @@ kable_styling(full_width = FALSE, bootstrap_options = "striped")
 
 3.3. Gráfico – Fairness
 
-```{r}
-ggplot(tab, aes(x = grupo_ref, y = taxa_aprovacao, fill = grupo_ref)) +
+```{r,warning=FALSE, message=FALSE}
+ggplot(tab, aes(x = grupo_ref, y = taxa_aprovacao)) +
 geom_col() +
 scale_fill_manual(values = cores["inclusao"]) +
 scale_y_continuous(labels = percent_format()) +
@@ -189,7 +189,7 @@ mutate(dt = as.POSIXct(dt))
 
 4.2. Gráfico temporal
 
-```{r}
+```{r,warning=FALSE, message=FALSE}
 ggplot(energia, aes(x = dt, y = kwh)) +
 geom_line(color = cores["energia"], linewidth = 1) +
 geom_smooth(color = "black", linewidth = 1, se = FALSE) +
