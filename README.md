@@ -75,6 +75,8 @@ Avaliação de fairness e identificação de possíveis desigualdades.
 - Input: motivação, cansaço, estresse
 - Output: probabilidade de risco (baixo, médio, alto)
 
+- [chatbot Hygeia](/assets/chat_Hygeia.png)
+
 ### **Modelo 2 – Gaia (Anomalia de Energia)**
 
 - Algoritmo: **Isolation Forest**
@@ -85,6 +87,22 @@ Avaliação de fairness e identificação de possíveis desigualdades.
 
 - Métrica: **Disparate Impact**
 - Objetivo: analisar possíveis vieses em dados de aprovação
+
+### **Modelo 4 – Pandora (Saúde Mental)**
+
+- Algoritmo: **RNN + Tokenizer**
+- Input: mensagens
+- Output: mensagens de incentivo ou encaminhamento a especialista
+
+- [chatbot Pandora](/assets/chat_pandora.png)
+
+### **Modelo 5 – Atena (Produtividade & Suporte Operacional)**
+
+- Algoritmo: **Regras de intenção + Recuperação estruturada (NLU leve)**
+- Input: comandos do usuário (tarefas, relatorio, organizar, como fazer, checklist)
+- Output: Lista de tarefas do dia, Geração de relatórios operacionais, Orientações rápidas (excel, processos, políticas internas), Ações automatizadas (simulação: montar checklist, gerar resumo semanal)
+
+- [chatbot Pandora](/assets/chat_pandora.png)
 
 ---
 
@@ -216,12 +234,12 @@ Diferença de aprovação entre grupos.
 
 4. **📚 Documentação Mestra**
 
-   - [master_documentantio.md](master_documentantion.md)
+   - [master_documentantio.md](./master_documentation.md)
    - Arquitetura detalhada, justificativas técnicas, decisões de design
    - Fluxos e casos de uso
 
 5. **🧠 Especificações de IA**
-   - (document/ai_specifications.md)(./document/ai_specifications)
+   - [document/ai_specifications.md](./document/ai_specifications)
    - Modelos: Stress (Hygeia), Energia (Gaia), Fairness (Sophia), NLU (Pandora)
    - Dados sintéticos, features e técnicas usadas
 

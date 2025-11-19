@@ -7,3 +7,4 @@ pandas
 streamlit
 plotly
 sqlite-utils
+tensorflow
