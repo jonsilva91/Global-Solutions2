@@ -75,7 +75,7 @@ Avaliação de fairness e identificação de possíveis desigualdades.
 - Input: motivação, cansaço, estresse
 - Output: probabilidade de risco (baixo, médio, alto)
 
-- [chatbot Hygeia](/assets/chat_Hygeia.png)
+- ![chatbot Hygeia](/assets/chat_Hygeia.png)
 
 ### **Modelo 2 – Gaia (Anomalia de Energia)**
 
@@ -94,15 +94,13 @@ Avaliação de fairness e identificação de possíveis desigualdades.
 - Input: mensagens
 - Output: mensagens de incentivo ou encaminhamento a especialista
 
-- [chatbot Pandora](/assets/chat_pandora.png)
+- ![chatbot Pandora](/assets/chat_pandora.png)
 
 ### **Modelo 5 – Atena (Produtividade & Suporte Operacional)**
 
 - Algoritmo: **Regras de intenção + Recuperação estruturada (NLU leve)**
 - Input: comandos do usuário (tarefas, relatorio, organizar, como fazer, checklist)
 - Output: Lista de tarefas do dia, Geração de relatórios operacionais, Orientações rápidas (excel, processos, políticas internas), Ações automatizadas (simulação: montar checklist, gerar resumo semanal)
-
-- [chatbot Pandora](/assets/chat_pandora.png)
 
 ---
 
@@ -234,7 +232,7 @@ Diferença de aprovação entre grupos.
 
 4. **📚 Documentação Mestra**
 
-   - [master_documentantio.md](./master_documentation.md)
+   - [master_documentantion.md](./master_documentation.md)
    - Arquitetura detalhada, justificativas técnicas, decisões de design
    - Fluxos e casos de uso
 

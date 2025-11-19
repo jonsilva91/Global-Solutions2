@@ -854,84 +854,78 @@ graph TB
 %% ==========================
 %% MAIN SYSTEM – HUM.A.N OPS
 %% ==========================
-subgraph "🧠 HUM.A.N OPS – Multi‑Agent Intelligence Platform"
-    Orchestrator[🧭 Orquestrador Cognitivo<br/>Roteamento de Intenções<br/>Contexto & Decisão]
-    Atena[📘 Atena – Produtividade & Conhecimento<br/>FAQ Corporativo<br/>Explicações & Suporte Interno]
-    Hygeia[💚 Hygeia – Saúde Mental<br/>RandomForest Regressor<br/>Cálculo de Stress Score]
-    Pandora[📝 Pandora – NLP Engine<br/>RNN + Tokenizer<br/>Classificação de Intenções]
-    Gaia[⚡ Gaia – Energia & Sustentabilidade<br/>Anomalias (Isolation Forest)<br/>Consumo Energético]
-    Sophia[⚖️ Sophia – Fairness & Inclusão<br/>Métricas Éticas<br/>Disparate Impact / Selection Rate]
+subgraph HUMANN_OPS["🧠 HUM.A.N OPS – Multi-Agent Intelligence Platform"]
+    Orchestrator["🧭 Orquestrador Cognitivo<br/>Roteamento de Intenções<br/>Contexto & Decisão"]
+    Atena["📘 Atena – Produtividade & Conhecimento<br/>FAQ Corporativo<br/>Explicações & Suporte Interno"]
+    Hygeia["💚 Hygeia – Saúde Mental<br/>RandomForest Regressor<br/>Cálculo de Stress Score"]
+    Pandora["📝 Pandora – NLP Engine<br/>RNN + Tokenizer<br/>Classificação de Intenções"]
+    Gaia["⚡ Gaia – Energia & Sustentabilidade<br/>Anomalias (Isolation Forest)<br/>Consumo Energético"]
+    Sophia["⚖️ Sophia – Fairness & Inclusão<br/>Métricas Éticas<br/>Disparate Impact / Selection Rate"]
 end
 
 %% ==========================
 %% DASHBOARD / FRONTEND
 %% ==========================
-subgraph "📊 Dashboard Streamlit"
-    PessoasUI[👤 Módulo Pessoas<br/>Check-ins & Stress Trends]
-    OperacoesUI[⚙️ Operações<br/>Tarefas, Carga, Produtividade]
-    SustentabilidadeUI[🌍 Sustentabilidade<br/>Energia & Anomalias]
-    InclusaoUI[🤝 Inclusão<br/>Fairness & Métricas]
-    CopilotoUI[🤖 Copiloto Integrado<br/>Chat + Agentes]
+subgraph Dashboard["📊 Dashboard Streamlit"]
+    PessoasUI["👤 Módulo Pessoas<br/>Check-ins & Stress Trends"]
+    OperacoesUI["⚙️ Operações<br/>Tarefas, Carga, Produtividade"]
+    SustentabilidadeUI["🌍 Sustentabilidade<br/>Energia & Anomalias"]
+    InclusaoUI["🤝 Inclusão<br/>Fairness & Métricas"]
+    CopilotoUI["🤖 Copiloto Integrado<br/>Chat + Agentes"]
 end
 
 %% ==========================
 %% ML SERVICE
 %% ==========================
-subgraph "🧪 ML Service"
-    StressModel[💚 Modelo de Stress<br/>RandomForest]
-    EnergyIF[⚡ Detector de Anomalias<br/>Isolation Forest]
-    IntentRNN[📝 Classificador NLP<br/>RNN + Embeddings]
-    SHAPEngine[🔍 Explainability Engine<br/>SHAP Values / Isolation Path]
+subgraph MLService["🧪 ML Service"]
+    StressModel["💚 Modelo de Stress<br/>RandomForest"]
+    EnergyIF["⚡ Detector de Anomalias<br/>Isolation Forest"]
+    IntentRNN["📝 Classificador NLP<br/>RNN + Embeddings"]
+    SHAPEngine["🔍 Explainability Engine<br/>SHAP Values / Isolation Path"]
 end
 
 %% ==========================
 %% DATA & STORAGE
 %% ==========================
-subgraph "🗄️ Data Layer (SQLite → PostgreSQL)"
-    DBCheckin[(📄 Tabela CHECKIN<br/>motivacao, cansaco, estresse, score)]
-    DBEnergia[(⚡ Tabela ENERGIA<br/>kWh, equipamento, local)]
-    DBIntent[(📝 Tabela INTENCOES<br/>texto, classe_predita)]
-    DBFair[(⚖️ Tabela FAIRNESS<br/>grupo, taxa)]
-    DBUser[(👤 Tabela COLABORADOR)]
+subgraph DataLayer["🗄️ Data Layer (SQLite → PostgreSQL)"]
+    DBCheckin["📄 Tabela CHECKIN<br/>motivacao, cansaco, estresse, score"]
+    DBEnergia["⚡ Tabela ENERGIA<br/>kWh, equipamento, local"]
+    DBIntent["📝 Tabela INTENCOES<br/>texto, classe_predita"]
+    DBFair["⚖️ Tabela FAIRNESS<br/>grupo, taxa"]
+    DBUser["👤 Tabela COLABORADOR"]
 end
 
 %% ==========================
 %% IOT LAYER (ESP32)
 %% ==========================
-subgraph "🔌 IoT Layer – ESP32 Gaia Firmware"
-    ESP32[🤖 ESP32 Firmware<br/>Leitura de Corrente / kWh<br/>Serial/WiFi Gateway]
-    SensorCorr[🔌 Sensor de Corrente<br/>SCT-013 ou Similar]
+subgraph IOTLayer["🔌 IoT Layer – ESP32 Gaia Firmware"]
+    ESP32["🤖 ESP32 Firmware<br/>Leitura de Corrente / kWh<br/>Serial/WiFi Gateway"]
+    SensorCorr["🔌 Sensor de Corrente<br/>SCT-013 ou Similar"]
 end
 
 %% ==========================
-%% EXTERNAL / INTEGRATIONS
+%% EXTERNAL INTEGRATIONS
 %% ==========================
-subgraph "🌐 Integrações Externas"
-    TeamsSlack[💬 Teams / Slack<br/>Canais Conversacionais]
-    Monday[📋 Monday.com API<br/>Tarefas & Workflows (simulado)]
+subgraph External["🌐 Integrações Externas"]
+    TeamsSlack["💬 Teams / Slack<br/>Canais Conversacionais"]
+    Monday["📋 Monday.com API<br/>Tarefas & Workflows (simulado)"]
 end
 
-%% ==========================
-%% FLOWS – NLP / COGNITION
-%% ==========================
+%% FLOWS
 Pandora -->|Intenção| Orchestrator
 Orchestrator -->|Roteia| Atena
 Orchestrator --> Hygeia
 Orchestrator --> Gaia
 Orchestrator --> Sophia
 
-%% ==========================
-%% DASHBOARD FLOWS
-%% ==========================
+%% Dashboard Flows
 Atena --> CopilotoUI
 Hygeia --> PessoasUI
 Gaia --> SustentabilidadeUI
 Sophia --> InclusaoUI
 Pandora --> CopilotoUI
 
-%% ==========================
-%% DB FLOWS
-%% ==========================
+%% DB Flows
 Hygeia --> DBCheckin
 Gaia --> DBEnergia
 Pandora --> DBIntent
@@ -941,44 +935,22 @@ DBCheckin --> PessoasUI
 DBEnergia --> SustentabilidadeUI
 DBFair --> InclusaoUI
 
-%% ==========================
-%% ML SERVICE FLOWS
-%% ==========================
+%% ML Service
 Hygeia --> StressModel
 Gaia --> EnergyIF
 Pandora --> IntentRNN
 StressModel --> SHAPEngine
 EnergyIF --> SHAPEngine
 
-%% ==========================
-%% IOT FLOWS
-%% ==========================
+%% IoT Flows
 SensorCorr --> ESP32
 ESP32 --> Gaia
 ESP32 --> DBEnergia
 
-%% ==========================
-%% EXTERNAL SERVICES
-%% ==========================
+%% External
 TeamsSlack --> CopilotoUI
 Monday --> OperacoesUI
 
-%% ==========================
-%% STYLING CLASSES
-%% ==========================
-classDef agent fill:#673AB7,stroke:#4527A0,stroke-width:2px,color:#fff
-classDef ui fill:#4CAF50,stroke:#2E7D32,stroke-width:2px,color:#fff
-classDef ml fill:#9C27B0,stroke:#6A1B9A,stroke-width:2px,color:#fff
-classDef db fill:#03A9F4,stroke:#0277BD,stroke-width:2px,color:#fff
-classDef iot fill:#FF9800,stroke:#EF6C00,stroke-width:2px,color:#fff
-classDef ext fill:#90A4AE,stroke:#546E7A,stroke-width:2px,color:#fff
-
-class Orchestrator,Atena,Hygeia,Pandora,Gaia,Sophia agent
-class PessoasUI,OperacoesUI,SustentabilidadeUI,InclusaoUI,CopilotoUI ui
-class StressModel,EnergyIF,IntentRNN,SHAPEngine ml
-class DBCheckin,DBEnergia,DBIntent,DBFair,DBUser db
-class ESP32,SensorCorr iot
-class TeamsSlack,Monday ext
 ```
 
 ---
