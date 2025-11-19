@@ -147,11 +147,12 @@
         <div class="subtitle">Plataforma Integrada de Bem-Estar, Operações e Sustentabilidade</div>
 
         <div class="navigation" role="navigation">
-            <a href="#context" class="nav-link">🌍 Contexto</a>
-            <a href="#containers" class="nav-link">📦 Contêineres</a>
-            <a href="#components" class="nav-link">⚙️ Componentes</a>
-            <a href="#components-ml" class="nav-link">🧠 Componentes de ML</a>
-            <a href="#deployment" class="nav-link">☁️ Implantação</a>
+            <a href="#context" class="nav-link">🌍 C1: Diagrama de Contexto</a>
+            <a href="#containers" class="nav-link">📦 C2: Diagrama de Contêineres</a>
+            <a href="#components" class="nav-link">⚙️ C3: Diagrama de Componentes</a>
+            <a href="#components-ml" class="nav-link">🧠 C3: Diagrama de Componentes do ML Service</a>
+            <a href="#code-nlu" class="nav-link">📄 C4: Código (NLU Emocional)</a>
+            <a href="#deployment" class="nav-link">☁️ Arquitertura de Implantação</a>
         </div>
 
         <div class="key-features">
@@ -208,9 +209,10 @@
             <div class="feature-card">
                 <div class="feature-title">🧠 6) Inteligência Artificial (MVP)</div>
                 <ul>
-                    <li>Modelo de estresse (LogReg/XGBoost)</li>
+                    <li>Modelo de estresse (RandomForestRegressor)</li>
                     <li>Detecção de anomalias de energia (Isolation Forest/Autoencoder)</li>
                     <li>Classificador de intenção do bot (ML básico)</li>
+                    <li>NLU Emocional (Deep Learning com RNN)</li>
                     <li>Sistema de recomendações simples (regras + IA)</li>
                 </ul>
             </div>
@@ -301,7 +303,7 @@
                     System_Ext(monday, "Monday.com API")
 
                     System_Boundary(c1, "HUM.A.N Ops") {
-                        Container(dashboard, "Dashboard Web", "Streamlit", "Interface principal para visualização de dados e dashboards.")
+                        Container(dashboard, "Dashboard Web", "Plotly", "Interface principal para visualização de dados e dashboards.")
                         Container(bot, "Bot Copiloto", "Python + SDK Teams/Slack", "Processa comandos e interações nas plataformas de chat.")
                         Container(api, "HumanOps API", "Python (FastAPI)", "Endpoint central que orquestra a lógica de negócio, dados e IA.")
                         Container(ml_service, "ML Service", "Python (Scikit-learn, TF)", "Serve os modelos de ML para predições de estresse e anomalias.")
@@ -337,7 +339,7 @@
 C4Component
     title Diagrama de Componentes para a HumanOps API
 
-    Container(dashboard, "Dashboard Web", "Streamlit")
+    Container(dashboard, "Dashboard Web", "Plotly")
     Container(bot, "Bot Copiloto", "Python")
     ContainerDb(db, "Banco de Dados", "PostgreSQL")
     Container(ml_service, "ML Service", "Python")
@@ -399,9 +401,10 @@ C4Component
 
     System_Boundary(c1, "ML Service") {
         Component(api_controller, "API Controller", "FastAPI", "Recebe requisições de predição e as roteia.")
-        Component(stress_model, "Stress Model", "Scikit-learn/XGBoost", "Modelo treinado para prever risco de estresse.")
+        Component(stress_model, "Stress Model", "RandomForestRegressor", "Modelo treinado para prever risco de estresse.")
         Component(anomaly_model, "Energy Anomaly Detector", "Isolation Forest/Autoencoder", "Modelo treinado para detectar anomalias de consumo.")
         Component(intent_model, "Intent Classifier", "Scikit-learn", "Classifica a intenção do usuário nos comandos do bot.")
+        Component(nlu_model, "NLU Emocional", "Deep Learning (RNN + Tokenizer)", "Analisa o sentimento e emoções em textos de check-in.")
         Component(shap_engine, "Explainability Engine", "SHAP", "Gera explicações (SHAP values) para as predições dos modelos.")
     }
 
@@ -409,6 +412,7 @@ C4Component
     Rel(api_controller, stress_model, "Usa")
     Rel(api_controller, anomaly_model, "Usa")
     Rel(api_controller, intent_model, "Usa")
+    Rel(api_controller, nlu_model, "Usa para analisar textos")
     Rel(api_controller, shap_engine, "Usa para gerar explicações")
 
     Rel(shap_engine, stress_model, "Analisa")
@@ -418,13 +422,58 @@ C4Component
     UpdateElementStyle(stress_model, $bgColor="7CBB00", $fontColor="white")
     UpdateElementStyle(anomaly_model, $bgColor="7CBB00", $fontColor="white")
     UpdateElementStyle(intent_model, $bgColor="7CBB00", $fontColor="white")
+    UpdateElementStyle(nlu_model, $bgColor="7CBB00", $fontColor="white")
     UpdateElementStyle(shap_engine, $bgColor="F2665C", $fontColor="white")
             </div>
         </div>
 
-        <!-- C4: Diagrama de Implantação -->
+        <!-- C4: Diagrama de Código (Exemplo: NLU Emocional) -->
+        <div id="code-nlu" class="diagram-section">
+            <h2 class="diagram-title"><span class="icon">📄</span>C4 - Diagrama de Código (Exemplo: NLU Emocional)</h2>
+            <div class="diagram-description">Visão detalhada das classes internas do componente "NLU Emocional" dentro do ML Service, ilustrando sua estrutura de código.</div>
+            <div class="mermaid">
+classDiagram
+    direction LR
+
+    class NLUManager {
+        + analyze_text(text: string): EmotionResult
+        - _tokenizer: Tokenizer
+        - _rnn_model: RNNModel
+        - _emotion_classifier: EmotionClassifier
+    }
+
+    class Tokenizer {
+        + tokenize(text: string): list~string~
+        + encode(tokens: list~string~): list~int~
+        + load_vocab(path: string)
+    }
+
+    class RNNModel {
+        + load_model(path: string)
+        + predict(encoded_input: list~int~): array~float~
+        + train(data: DataSet, labels: DataSet)
+    }
+
+    class EmotionClassifier {
+        + classify(prediction_output: array~float~): EmotionResult
+    }
+
+    class EmotionResult {
+        + sentiment: string
+        + confidence: float
+        + emotions: map~string, float~
+    }
+
+    NLUManager "1" --> "1" Tokenizer : uses
+    NLUManager "1" --> "1" RNNModel : uses
+    NLUManager "1" --> "1" EmotionClassifier : uses
+    EmotionClassifier "1" --> "1" EmotionResult : creates
+            </div>
+        </div>
+
+        <!-- Diagrama de Implantação -->
         <div id="deployment" class="diagram-section">
-            <h2 class="diagram-title"><span class="icon">☁️</span>C4 - Diagrama de Implantação (Exemplo)</h2>
+            <h2 class="diagram-title"><span class="icon">☁️</span>Diagrama de Implantação (Exemplo)</h2>
             <div class="diagram-description">Mostra como os contêineres do sistema são implantados em uma infraestrutura de nuvem (ex: Google Cloud).</div>
             <div class="mermaid">
 C4Deployment
@@ -432,7 +481,7 @@ C4Deployment
 
     Deployment_Node(gcp, "Google Cloud Platform") {
         Deployment_Node(cloud_run, "Cloud Run") {
-            Container(dashboard, "Dashboard Web", "Streamlit")
+            Container(dashboard, "Dashboard Web", "Plotly")
             Container(api, "HumanOps API", "FastAPI")
             Container(bot, "Bot Copiloto", "Python")
             Container(ml_service, "ML Service", "Python")
