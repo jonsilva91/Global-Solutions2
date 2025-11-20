@@ -14,7 +14,7 @@
 
 # 🎥 Vídeo da Apresentação
 
-👉 _Adicionar link do YouTube (Não listado)_
+[![Vídeo de Apresentação](https://img.youtube.com/vi/5PL3FIZcALk/mqdefault.jpg)](https://www.youtube.com/watch?v=5PL3FIZcALk)
 
 ---
 
